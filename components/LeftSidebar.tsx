@@ -113,7 +113,7 @@ const LeftSidebar: React.FC = () => {
                 style={{
                   animationDuration: "600ms",
                   animationFillMode: "backwards",
-                  animationTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)", // This adds bounce
+                  animationTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)",
                 }}
               >
                 <CardContent className="py-4">

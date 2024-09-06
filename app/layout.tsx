@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Chat Assistant",
+  title: "AI Chat Runtask",
   description: "Chat with an AI assistant powered by Anthropic",
 };
 

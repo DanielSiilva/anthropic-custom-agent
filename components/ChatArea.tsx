@@ -588,7 +588,7 @@ function ChatArea() {
             <div className="flex flex-col items-center justify-center h-full animate-fade-in-up">
               <Avatar className="w-10 h-10 mb-4 border">
                 <AvatarImage
-                  src="/ant-logo.svg"
+                  src="/assistente.webp"
                   alt="AI Assistant Avatar"
                   width={40}
                   height={40}
