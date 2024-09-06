@@ -123,43 +123,36 @@ const MessageContent = ({
   role: string;
 }) => {
   const [thinking, setThinking] = useState(true);
-  const [parsed, setParsed] = useState<{
-    response?: string;
-    thinking?: string;
-    user_mood?: string;
-    suggested_questions?: string[];
-    redirect_to_agent?: { should_redirect: boolean; reason: string };
-    debug?: {
-      context_used: boolean;
-    };
-  }>({});
+  const [parsed, setParsed] = useState<{ response?: string }>({});
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (!content || role !== "assistant") return;
+    if (!content) return;
 
     const timer = setTimeout(() => {
       setError(true);
       setThinking(false);
     }, 30000);
 
-    try {
-      const result = JSON.parse(content);
-      console.log("🔍 Parsed Result:", result);
+    if (role === "assistant") {
+      try {
+        const result = JSON.parse(content);
+        console.log("🔍 Parsed Result:", result);
 
-      if (
-        result.response &&
-        result.response.length > 0 &&
-        result.response !== "..."
-      ) {
-        setParsed(result);
+        if (
+          result.response &&
+          result.response.length > 0 &&
+          result.response !== "..."
+        ) {
+          setParsed(result);
+          setThinking(false);
+          clearTimeout(timer);
+        }
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        setError(true);
         setThinking(false);
-        clearTimeout(timer);
       }
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      setError(true);
-      setThinking(false);
     }
 
     return () => clearTimeout(timer);
@@ -174,21 +167,111 @@ const MessageContent = ({
     );
   }
 
-  if (error && !parsed.response) {
+  if (error && role === "assistant" && !parsed.response) {
     return <div>Something went wrong. Please try again.</div>;
   }
 
+  // Apply styles only if the content has a black background
+  const isBlackBackground = role === "user"; // Assuming the 'user' role gets the black background
+
   return (
-    <>
+    <div
+      style={
+        isBlackBackground
+          ? {
+              backgroundColor: "black", // Black background
+              color: "white", // White text for contrast
+              maxWidth: "450px", // Limit width to 300px
+              maxHeight: "300px", // Limit height to 300px
+              overflow: "hidden", // Hide overflow content
+              textOverflow: "ellipsis", // Show ellipsis for overflowing text
+              whiteSpace: "nowrap", // Prevent text wrapping
+              wordWrap: "break-word", // Break long words
+            }
+          : {}
+      }
+    >
       <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeHighlight]}>
-        {parsed.response || content}
+        {role === "user" ? content : parsed.response || content}
       </ReactMarkdown>
-      {parsed.redirect_to_agent && (
-        <UISelector redirectToAgent={parsed.redirect_to_agent} />
-      )}
-    </>
+    </div>
   );
 };
+
+// const MessageContent = ({
+//   content,
+//   role,
+// }: {
+//   content: string;
+//   role: string;
+// }) => {
+//   const [thinking, setThinking] = useState(true);
+//   const [parsed, setParsed] = useState<{
+//     response?: string;
+//     thinking?: string;
+//     user_mood?: string;
+//     suggested_questions?: string[];
+//     redirect_to_agent?: { should_redirect: boolean; reason: string };
+//     debug?: {
+//       context_used: boolean;
+//     };
+//   }>({});
+//   const [error, setError] = useState(false);
+
+//   useEffect(() => {
+//     if (!content || role !== "assistant") return;
+
+//     const timer = setTimeout(() => {
+//       setError(true);
+//       setThinking(false);
+//     }, 30000);
+
+//     try {
+//       const result = JSON.parse(content);
+//       console.log("🔍 Parsed Result:", result);
+
+//       if (
+//         result.response &&
+//         result.response.length > 0 &&
+//         result.response !== "..."
+//       ) {
+//         setParsed(result);
+//         setThinking(false);
+//         clearTimeout(timer);
+//       }
+//     } catch (error) {
+//       console.error("Error parsing JSON:", error);
+//       setError(true);
+//       setThinking(false);
+//     }
+
+//     return () => clearTimeout(timer);
+//   }, [content, role]);
+
+//   if (thinking && role === "assistant") {
+//     return (
+//       <div className="flex items-center">
+//         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2" />
+//         <span>Thinking...</span>
+//       </div>
+//     );
+//   }
+
+//   if (error && !parsed.response) {
+//     return <div>Something went wrong. Please try again.</div>;
+//   }
+
+//   return (
+//     <>
+//       <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeHighlight]}>
+//         {parsed.response || content}
+//       </ReactMarkdown>
+//       {parsed.redirect_to_agent && (
+//         <UISelector redirectToAgent={parsed.redirect_to_agent} />
+//       )}
+//     </>
+//   );
+// };
 
 // Define a type for the model
 type Model = {
@@ -218,6 +301,83 @@ type KnowledgeBase = {
   name: string;
 };
 
+//   selectedModel,
+//   setSelectedModel,
+//   models,
+//   showAvatar,
+//   selectedKnowledgeBase,
+//   setSelectedKnowledgeBase,
+//   knowledgeBases,
+// }) => (
+//   <div className="p-0 flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2 animate-fade-in">
+//     <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+//       {showAvatar && (
+//         <>
+//           <Avatar className="w-10 h-10 border">
+//             <AvatarImage
+//               src="/ant-logo.svg"
+//               alt="AI Assistant Avatar"
+//               width={40}
+//               height={40}
+//             />
+//             <AvatarFallback>AI</AvatarFallback>
+//           </Avatar>
+//           <div>
+//             <h3 className="text-sm font-medium leading-none">AI Agent</h3>
+//             <p className="text-sm text-muted-foreground">Customer support</p>
+//           </div>
+//         </>
+//       )}
+//     </div>
+//     <div className="flex space-x-2 w-full sm:w-auto">
+//       <DropdownMenu>
+//         <DropdownMenuTrigger asChild>
+//           <Button
+//             variant="outline"
+//             size="sm"
+//             className="flex-grow text-muted-foreground sm:flex-grow-0"
+//           >
+//             {models.find((m) => m.id === selectedModel)?.name}
+//             <ChevronDown className="ml-2 h-4 w-4" />
+//           </Button>
+//         </DropdownMenuTrigger>
+//         <DropdownMenuContent>
+//           {models.map((model) => (
+//             <DropdownMenuItem
+//               key={model.id}
+//               onSelect={() => setSelectedModel(model.id)}
+//             >
+//               {model.name}
+//             </DropdownMenuItem>
+//           ))}
+//         </DropdownMenuContent>
+//       </DropdownMenu>
+//       <DropdownMenu>
+//         <DropdownMenuTrigger asChild>
+//           <Button
+//             variant="outline"
+//             size="sm"
+//             className="flex-grow text-muted-foreground  sm:flex-grow-0"
+//           >
+//             {knowledgeBases.find((kb) => kb.id === selectedKnowledgeBase)
+//               ?.name || "Select KB"}
+//             <ChevronDown className="ml-2 h-4 w-4" />
+//           </Button>
+//         </DropdownMenuTrigger>
+//         <DropdownMenuContent>
+//           {knowledgeBases.map((kb) => (
+//             <DropdownMenuItem
+//               key={kb.id}
+//               onSelect={() => setSelectedKnowledgeBase(kb.id)}
+//             >
+//               {kb.name}
+//             </DropdownMenuItem>
+//           ))}
+//         </DropdownMenuContent>
+//       </DropdownMenu>
+//     </div>
+//   </div>
+// );
 const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   selectedModel,
   setSelectedModel,
@@ -226,76 +386,154 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   selectedKnowledgeBase,
   setSelectedKnowledgeBase,
   knowledgeBases,
-}) => (
-  <div className="p-0 flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2 animate-fade-in">
-    <div className="flex items-center space-x-4 mb-2 sm:mb-0">
-      {showAvatar && (
-        <>
-          <Avatar className="w-10 h-10 border">
-            <AvatarImage
-              src="/ant-logo.svg"
-              alt="AI Assistant Avatar"
-              width={40}
-              height={40}
-            />
-            <AvatarFallback>AI</AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="text-sm font-medium leading-none">AI Agent</h3>
-            <p className="text-sm text-muted-foreground">Customer support</p>
-          </div>
-        </>
-      )}
-    </div>
-    <div className="flex space-x-2 w-full sm:w-auto">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-grow text-muted-foreground sm:flex-grow-0"
-          >
-            {models.find((m) => m.id === selectedModel)?.name}
-            <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {models.map((model) => (
-            <DropdownMenuItem
-              key={model.id}
-              onSelect={() => setSelectedModel(model.id)}
+}) => {
+  const [cpf, setCpf] = useState("");
+  const [apiResult, setApiResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleCpfChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCpf(event.target.value);
+  };
+
+  const handleCpfSubmit = async () => {
+    console.log("CPF enviado:", cpf);
+
+    // Verificar se o CPF está preenchido
+    if (!cpf) {
+      alert("Por favor, digite o CPF");
+      return;
+    }
+
+    setLoading(true); // Define o estado de carregamento
+    try {
+      const response = await fetch(
+        "https://api.devel.runtask.com/api/mp_packages_tratado/filter?$size=50&$page=1",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN}`,
+          },
+          body: JSON.stringify({
+            filter: {
+              "clientProfileData.document": cpf,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao fazer a chamada à API");
+      }
+
+      const result = await response.json();
+      //console.log("result", result);
+      setApiResult(result);
+
+      if (result && result.data) {
+        localStorage.setItem("@cpfData-ia-teste", JSON.stringify(result.data));
+        // console.log("Dados salvos no localStorage:", result.data);
+      }
+    } catch (error) {
+      console.error("Erro ao fazer a chamada à API:", error);
+      setApiResult(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-0 flex flex-col sm:flex-row items-start sm:items-center justify-between pb-2 animate-fade-in">
+      <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+        {showAvatar && (
+          <>
+            <Avatar className="w-10 h-10 border">
+              <AvatarImage
+                src="/ant-logo.svg"
+                alt="AI Assistant Avatar"
+                width={40}
+                height={40}
+              />
+              <AvatarFallback>AI</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-sm font-medium leading-none">AI Agent</h3>
+              <p className="text-sm text-muted-foreground">Customer support</p>
+            </div>
+          </>
+        )}
+      </div>
+      <div className="flex space-x-2 w-full sm:w-auto">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-grow text-muted-foreground sm:flex-grow-0"
             >
-              {model.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-grow text-muted-foreground  sm:flex-grow-0"
-          >
-            {knowledgeBases.find((kb) => kb.id === selectedKnowledgeBase)
-              ?.name || "Select KB"}
-            <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {knowledgeBases.map((kb) => (
-            <DropdownMenuItem
-              key={kb.id}
-              onSelect={() => setSelectedKnowledgeBase(kb.id)}
+              {models.find((m) => m.id === selectedModel)?.name}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {models.map((model) => (
+              <DropdownMenuItem
+                key={model.id}
+                onSelect={() => setSelectedModel(model.id)}
+              >
+                {model.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-grow text-muted-foreground  sm:flex-grow-0"
             >
-              {kb.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+              {knowledgeBases.find((kb) => kb.id === selectedKnowledgeBase)
+                ?.name || "Select KB"}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {knowledgeBases.map((kb) => (
+              <DropdownMenuItem
+                key={kb.id}
+                onSelect={() => setSelectedKnowledgeBase(kb.id)}
+              >
+                {kb.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Campo de input para CPF */}
+        <input
+          type="text"
+          value={cpf}
+          onChange={handleCpfChange}
+          placeholder="Digite o CPF"
+          className="border border-gray-300 rounded-md p-1 text-sm bg-white"
+        />
+
+        {/* Botão de envio de CPF */}
+        <Button
+          color="primary"
+          size="sm"
+          onClick={handleCpfSubmit}
+          className="ml-2"
+          disabled={loading}
+        >
+          {loading ? "Enviando..." : "Enviar"}
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function ChatArea() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -411,10 +649,21 @@ function ChatArea() {
     const clientStart = performance.now();
     console.log("🔄 Starting request: " + new Date().toISOString());
 
+    const cpfData = localStorage.getItem("@cpfData-ia-teste");
+    const parsedCpfData = cpfData ? JSON.parse(cpfData) : null;
+
+    const concatenatedContent = parsedCpfData
+      ? `${
+          typeof event === "string" ? event : input
+        } - Dados  do cliente, mantena conversar em portugues do brasil: ${JSON.stringify(
+          parsedCpfData
+        )}`
+      : `${typeof event === "string" ? event : input}`;
+
     const userMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      content: typeof event === "string" ? event : input,
+      content: concatenatedContent,
     };
 
     const placeholderMessage = {
@@ -468,6 +717,10 @@ function ChatArea() {
       logDuration("JSON Parse Duration", endTime - responseReceived);
       logDuration("Total API Duration", endTime - startTime);
       console.log("⬅️ Received response from API:", data);
+
+      // Remover o CPF do localStorage após o envio
+      localStorage.removeItem("@cpfData-ia-teste");
+      console.log("✅ CPF removido do localStorage");
 
       const suggestedQuestionsHeader = response.headers.get(
         "x-suggested-questions"

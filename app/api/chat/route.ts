@@ -67,6 +67,8 @@ export async function POST(req: Request) {
 
   // Extract data from the request body
   const { messages, model, knowledgeBaseId } = await req.json();
+  console.log("messages", messages);
+
   const latestMessage = messages[messages.length - 1].content;
 
   console.log("📝 Latest Query:", latestMessage);
