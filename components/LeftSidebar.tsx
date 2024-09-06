@@ -46,7 +46,7 @@ const MAX_THINKING_HISTORY = 15;
 
 const LeftSidebar: React.FC = () => {
   const [thinkingContents, setThinkingContents] = useState<ThinkingContent[]>(
-    [],
+    []
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const LeftSidebar: React.FC = () => {
           if (!exists) {
             console.log(
               "📝 New thinking entry: ",
-              event.detail.content.slice(0, 50) + "...",
+              event.detail.content.slice(0, 50) + "..."
             ); // Shows first 50 chars
 
             // Add a timestamp!
@@ -69,7 +69,7 @@ const LeftSidebar: React.FC = () => {
 
             const newHistory = [enhancedEntry, ...prev].slice(
               0,
-              MAX_THINKING_HISTORY,
+              MAX_THINKING_HISTORY
             ); // Always keep latest 20
 
             return newHistory;
@@ -83,12 +83,12 @@ const LeftSidebar: React.FC = () => {
 
     window.addEventListener(
       "updateSidebar",
-      handleUpdateSidebar as EventListener,
+      handleUpdateSidebar as EventListener
     );
     return () =>
       window.removeEventListener(
         "updateSidebar",
-        handleUpdateSidebar as EventListener,
+        handleUpdateSidebar as EventListener
       );
   }, []);
 
@@ -97,13 +97,13 @@ const LeftSidebar: React.FC = () => {
       <Card className="h-full overflow-hidden">
         <CardHeader>
           <CardTitle className="text-sm font-medium leading-none">
-            Assistant Thinking
+            Pensamento Assistente
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-y-auto h-[calc(100%-45px)]">
           {thinkingContents.length === 0 ? (
             <div className="text-sm text-muted-foreground">
-              The assistant inner dialogue will appear here for you to debug it
+              O diálogo interno do assistente aparecerá aqui para você depurá-lo
             </div>
           ) : (
             thinkingContents.map((content) => (
@@ -124,14 +124,18 @@ const LeftSidebar: React.FC = () => {
                     <div className="flex items-center space-x-2 mt-4 text-xs">
                       {/* Mood */}
                       <span
-                        className={`px-2 py-1 rounded-full ${getMoodColor(content.user_mood)}`}
+                        className={`px-2 py-1 rounded-full ${getMoodColor(
+                          content.user_mood
+                        )}`}
                       >
                         {content.user_mood.charAt(0).toUpperCase() +
                           content.user_mood.slice(1)}
                       </span>
 
                       <span
-                        className={`px-2 py-1 rounded-full ${getDebugPillColor(content.debug.context_used)}`}
+                        className={`px-2 py-1 rounded-full ${getDebugPillColor(
+                          content.debug.context_used
+                        )}`}
                       >
                         Context: {content.debug.context_used ? "✅" : "❌"}
                       </span>
@@ -173,7 +177,7 @@ const LeftSidebar: React.FC = () => {
                               .split("_")
                               .map(
                                 (word) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1),
+                                  word.charAt(0).toUpperCase() + word.slice(1)
                               )
                               .join(" ")}
                           </div>

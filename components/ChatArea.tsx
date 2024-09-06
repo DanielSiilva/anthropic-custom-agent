@@ -78,7 +78,7 @@ const UISelector = ({
         }}
       >
         <LifeBuoyIcon className="w-4 h-4" />
-        <small className="text-sm leading-none">Talk to a human</small>
+        <small className="text-sm leading-none">Fale com um humano</small>
       </Button>
     );
   }
@@ -307,7 +307,7 @@ function ChatArea() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [selectedKnowledgeBase, setSelectedKnowledgeBase] = useState(
-    "your-knowledge-base-id",
+    "your-knowledge-base-id"
   );
 
   const knowledgeBases: KnowledgeBase[] = [
@@ -352,12 +352,12 @@ function ChatArea() {
 
       window.addEventListener(
         "updateSidebar" as any,
-        handleUpdateSidebar as EventListener,
+        handleUpdateSidebar as EventListener
       );
       return () =>
         window.removeEventListener(
           "updateSidebar" as any,
-          handleUpdateSidebar as EventListener,
+          handleUpdateSidebar as EventListener
         );
     }
   }, []);
@@ -372,12 +372,12 @@ function ChatArea() {
 
       window.addEventListener(
         "updateRagSources" as any,
-        handleUpdateRagSources as EventListener,
+        handleUpdateRagSources as EventListener
       );
       return () =>
         window.removeEventListener(
           "updateRagSources" as any,
-          handleUpdateRagSources as EventListener,
+          handleUpdateRagSources as EventListener
         );
     }
   }, []);
@@ -399,7 +399,7 @@ function ChatArea() {
   };
 
   const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement> | string,
+    event: React.FormEvent<HTMLFormElement> | string
   ) => {
     if (typeof event !== "string") {
       event.preventDefault();
@@ -470,7 +470,7 @@ function ChatArea() {
       console.log("⬅️ Received response from API:", data);
 
       const suggestedQuestionsHeader = response.headers.get(
-        "x-suggested-questions",
+        "x-suggested-questions"
       );
       if (suggestedQuestionsHeader) {
         data.suggested_questions = JSON.parse(suggestedQuestionsHeader);
@@ -481,7 +481,7 @@ function ChatArea() {
         const ragProcessed = performance.now();
         logDuration(
           "🔍 RAG Processing Duration",
-          ragProcessed - responseReceived,
+          ragProcessed - responseReceived
         );
         const sources = JSON.parse(ragHeader);
         window.dispatchEvent(
@@ -491,7 +491,7 @@ function ChatArea() {
               query: userMessage.content,
               debug: data.debug,
             },
-          }),
+          })
         );
       }
 
@@ -524,7 +524,7 @@ function ChatArea() {
         window.dispatchEvent(
           new CustomEvent("agentRedirectRequested", {
             detail: data.redirect_to_agent,
-          }),
+          })
         );
       }
     } catch (error) {
@@ -595,31 +595,8 @@ function ChatArea() {
                 />
               </Avatar>
               <h2 className="text-2xl font-semibold mb-8">
-                Here&apos;s how I can help
+                Diga como posso ajuda-lo?
               </h2>
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3">
-                  <HandHelping className="text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    Need guidance? I&apos;ll help navigate tasks using internal
-                    resources.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <WandSparkles className="text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    I&apos;m a whiz at finding information! I can dig through
-                    your knowledge base.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <BookOpenText className="text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    I&apos;m always learning! The more you share, the better I
-                    can assist you.
-                  </p>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="space-y-4">

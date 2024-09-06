@@ -54,7 +54,7 @@ const RightSidebar: React.FC = () => {
         sources: RAGSource[];
         query: string;
         debug?: DebugInfo;
-      }>,
+      }>
     ) => {
       console.log("🔍 RAG event received:", event.detail);
       const { sources, query, debug } = event.detail;
@@ -88,7 +88,7 @@ const RightSidebar: React.FC = () => {
 
         console.log(
           "🔍 Sources displayed:",
-          shouldDisplaySources ? "YES" : "NO",
+          shouldDisplaySources ? "YES" : "NO"
         );
       }
     };
@@ -101,21 +101,21 @@ const RightSidebar: React.FC = () => {
 
     window.addEventListener(
       "updateRagSources" as any,
-      updateRAGSources as EventListener,
+      updateRAGSources as EventListener
     );
     window.addEventListener(
       "updateSidebar" as any,
-      updateDebug as EventListener,
+      updateDebug as EventListener
     );
 
     return () => {
       window.removeEventListener(
         "updateRagSources" as any,
-        updateRAGSources as EventListener,
+        updateRAGSources as EventListener
       );
       window.removeEventListener(
         "updateSidebar" as any,
-        updateDebug as EventListener,
+        updateDebug as EventListener
       );
     };
   }, []);
@@ -140,13 +140,13 @@ const RightSidebar: React.FC = () => {
       >
         <CardHeader>
           <CardTitle className="text-sm font-medium leading-none">
-            Knowledge Base History
+            História da Base de Conhecimento
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-y-auto h-[calc(100%-45px)]">
           {ragHistory.length === 0 && (
             <div className="text-sm text-muted-foreground">
-              The assistant will display sources here once finding them
+              O assistente exibirá as fontes aqui assim que as encontrar
             </div>
           )}
           {ragHistory.map((historyItem, index) => (
@@ -177,7 +177,9 @@ const RightSidebar: React.FC = () => {
                     </p>
                     <div className="flex flex-col gap-2">
                       <div
-                        className={`${getScoreColor(source.score)} px-2 py-1 mt-4 rounded-full text-xs inline-block w-fit`}
+                        className={`${getScoreColor(
+                          source.score
+                        )} px-2 py-1 mt-4 rounded-full text-xs inline-block w-fit`}
                       >
                         {(source.score * 100).toFixed(0)}% match
                       </div>
