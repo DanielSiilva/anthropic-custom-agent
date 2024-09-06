@@ -181,7 +181,7 @@ const MessageContent = ({
           ? {
               backgroundColor: "black", // Black background
               color: "white", // White text for contrast
-              maxWidth: "450px", // Limit width to 300px
+              maxWidth: "350px", // Limit width to 300px
               maxHeight: "300px", // Limit height to 300px
               overflow: "hidden", // Hide overflow content
               textOverflow: "ellipsis", // Show ellipsis for overflowing text
